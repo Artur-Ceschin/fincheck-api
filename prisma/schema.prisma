@@ -8,19 +8,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+enum TransactionType {
+  INCOME
+  EXPENSE
 
-  bankAccounts BankAccount[]
-
-  @@map("users")
+  @@map("transaction_type")
 }
-
 
 enum BankAccountType {
   CHECKING
@@ -28,6 +21,21 @@ enum BankAccountType {
   CASH
 
   @@map("bank_account_type")
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  bankAccounts BankAccount[]
+  categories Category[]
+  transactions Transaction[]
+
+  @@map("users")
 }
 
 model BankAccount {
@@ -38,12 +46,50 @@ model BankAccount {
   type            BankAccountType
   color           String
   createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
+  transactions Transaction[]
 
   @@map("bank_accounts")
 }
 
+
+model Category {
+  id          String @id @default(uuid()) @db.Uuid
+  userId      String @map("user_id")  @db.Uuid 
+  name        String @map("name")
+  icon        String @map("icon")
+  color       String @map("color")
+  type        TransactionType @default(EXPENSE)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  transactions Transaction[]
+
+  @@map("categories")
+}
+
+
+model Transaction {
+  id                String @id @default(uuid()) @db.Uuid
+  userId            String @map("user_id")  @db.Uuid 
+  bankAccountId     String @map("bank_account_id") @db.Uuid
+  categoryId        String? @map("category_id") @db.Uuid
+  name              String 
+  value             Float
+  type              TransactionType
+  date              DateTime
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bankAccount BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  category Category?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@map("transactions")
+}
