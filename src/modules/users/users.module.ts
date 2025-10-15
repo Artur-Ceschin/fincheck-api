@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { env } from 'src/shared/config/env';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Module({
   imports: [
