@@ -9,7 +9,7 @@ export class UsersController {
   @Get('/me')
   @UseGuards(AuthGuard)
   me(@Req() req: any) {
-    const userId = req.user.id;
+    const userId = req.user.sub;
     return this.usersService.getUserById(userId);
   }
 }
