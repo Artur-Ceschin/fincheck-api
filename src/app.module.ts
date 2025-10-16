@@ -6,6 +6,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { env } from './shared/config/env';
 import { AuthGuard } from './modules/auth/auth.guard';
+import { CategoriesModule } from './modules/categories/categories.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthGuard } from './modules/auth/auth.guard';
       secret: env.jwtSecret,
       signOptions: { expiresIn: '7d' },
     }),
+    CategoriesModule,
   ],
   providers: [
     {
