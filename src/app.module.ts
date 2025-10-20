@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { env } from './shared/config/env';
 import { AuthGuard } from './modules/auth/auth.guard';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { BankAccountsModule } from './modules/bank-accounts/bank-accounts.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
       signOptions: { expiresIn: '7d' },
     }),
     CategoriesModule,
+    BankAccountsModule,
   ],
   providers: [
     {
