@@ -21,7 +21,6 @@ export class TransactionsController {
     @ActiveUserId() userId: string,
     @Body() createTransactionDto: CreateTransactionDto,
   ) {
-    console.log('Received data:', createTransactionDto);
     return this.transactionsService.create(userId, createTransactionDto);
   }
 
