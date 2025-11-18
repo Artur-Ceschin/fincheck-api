@@ -13,6 +13,15 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3002);
+  app.enableCors({
+    origin: '*',
+  });
+
+  app.getHttpAdapter().get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
+  const port = process.env.PORT || 3002;
+  await app.listen(port);
 }
 bootstrap();
