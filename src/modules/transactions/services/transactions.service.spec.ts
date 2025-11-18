@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionsService } from './transactions.service';
 import { TransactionsRepository } from 'src/shared/database/repositories/transactions.repositories';
-import { ValidateBankAccountOwnershipService } from 'src/modules/bank-accounts/services/validate-bank-account-ownership.service';
 import { ValidateCategoryOwnershipService } from 'src/modules/categories/services/validate-category-ownership.service';
 import { ValidateTransactionOwnershipService } from './validate-transaction-ownership.service';
+import { ValidateBankAccountOwnershipService } from 'src/modules/bank-accounts/services/validate-bank-account-ownership.service';
 
 const transactionsRepositoryMock = {
   create: jest.fn(),
@@ -96,10 +96,20 @@ describe('TransactionsService', () => {
       const list = [{ id: 't1' }, { id: 't2' }];
       transactionsRepositoryMock.findMany.mockResolvedValueOnce(list);
 
-      const result = await service.findAllByUserId(userId);
+      const result = await service.findAllByUserId(userId, {
+        month: 1,
+        year: 2025,
+      });
 
       expect(transactionsRepositoryMock.findMany).toHaveBeenCalledWith({
-        where: { userId },
+        where: {
+          userId,
+          bankAccountId: undefined,
+          date: {
+            gte: new Date(Date.UTC(2025, 1)),
+            lt: new Date(Date.UTC(2025, 2)),
+          },
+        },
       });
       expect(result).toBe(list);
     });
@@ -163,7 +173,7 @@ describe('TransactionsService', () => {
       expect(transactionsRepositoryMock.delete).toHaveBeenCalledWith({
         where: { id: transactionId },
       });
-      expect(result).toEqual(deleted);
+      expect(result).toBeNull();
     });
   });
 });
